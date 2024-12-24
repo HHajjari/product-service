@@ -60,9 +60,11 @@ jobs:
       - name: Build and Push Image
         run: |
           pack build ${{ vars.ACR_NAME }}.azurecr.io/productservice:0.0.1-SNAPSHOT \
-            --builder paketobuildpacks/builder:base \
+            --builder paketobuildpacks/builder-jammy-java-tiny \
+            --env BP_JVM_VERSION=21 \
             --path . \
             --publish
+      
 
       - name: Verify Image in ACR
         run: |
