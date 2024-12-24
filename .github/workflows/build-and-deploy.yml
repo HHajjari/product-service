@@ -48,9 +48,11 @@ jobs:
         run: |
           echo "ACR Name: ${{ vars.ACR_NAME }}.azurecr.io"
 
-      - name: Verify Docker Login
-        run: docker login ${{ vars.ACR_NAME }}.azurecr.io
-
+      - name: Log in to ACR using Docker
+        run: |
+          TOKEN=$(az acr login --name ${{ vars.ACR_NAME }} --expose-token --output tsv --query accessToken)
+          echo "$TOKEN" | docker login ${{ vars.ACR_NAME }}.azurecr.io -u 00000000-0000-0000-0000-000000000000 --password-stdin
+      
 
       # Build and push Docker image
       - name: Build and push Docker image
