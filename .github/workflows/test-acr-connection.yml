@@ -23,6 +23,6 @@ jobs:
 
       - name: Test ACR Connection
         run: |
-          az acr login --name <ACR-NAME>
-          az acr repository list --name <ACR-NAME> --output table
+          az acr login --name productserviceacr
+          az acr repository list --name productserviceacr --output table
 
