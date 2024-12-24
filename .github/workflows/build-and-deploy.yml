@@ -44,6 +44,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Print ACR Name
+        run: |
+          echo "ACR Name: ${{ vars.ACR_NAME }}.azurecr.io"
+
       # Build and push Docker image
       - name: Build and push Docker image
         run: |
