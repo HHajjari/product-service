@@ -48,10 +48,14 @@ jobs:
         run: |
           echo "ACR Name: ${{ vars.ACR_NAME }}.azurecr.io"
 
+      - name: Verify Docker Login
+        run: docker login ${{ vars.ACR_NAME }}.azurecr.io
+
+
       # Build and push Docker image
       - name: Build and push Docker image
         run: |
-          mvn -DskipTests -Ddocker.registry=${{ vars.ACR_NAME }}.azurecr.io clean package spring-boot:build-image
+          mvn -X -DskipTests -Ddocker.registry=${{ vars.ACR_NAME }}.azurecr.io clean package spring-boot:build-image
 
       - name: Verify All Repositories in ACR
         run: |
