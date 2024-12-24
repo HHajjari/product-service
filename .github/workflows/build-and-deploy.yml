@@ -76,6 +76,6 @@ jobs:
           acrName: ${{ vars.ACR_NAME }}
           containerAppName: productservice-container-app
           resourceGroup: productservice-dev-westeurope-rg
-          imageToDeploy: productservice:0.0.1-SNAPSHOT
+          imageToDeploy: productserviceacr.azurecr.io/productservice:0.0.1-SNAPSHOT
           containerAppEnvironment: productservice-container-app-env
 
