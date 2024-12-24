@@ -52,14 +52,18 @@ jobs:
         run: |
           TOKEN=$(az acr login --name ${{ vars.ACR_NAME }} --expose-token --output tsv --query accessToken)
           echo "$TOKEN" | docker login ${{ vars.ACR_NAME }}.azurecr.io -u 00000000-0000-0000-0000-000000000000 --password-stdin
-      
 
-      # Build and push Docker image
-      - name: Build and push Docker image
+      - name: Install Pack CLI
         run: |
-          mvn -X -DskipTests -Ddocker.registry=${{ vars.ACR_NAME }}.azurecr.io clean package spring-boot:build-image
+          curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.30.0/pack-v0.30.0-linux.tgz" | sudo tar -xz -C /usr/local/bin
 
-      - name: Verify All Repositories in ACR
+      - name: Build and Push Image
         run: |
-          echo "Listing all repositories in ACR..."
+          pack build ${{ vars.ACR_NAME }}.azurecr.io/productservice:0.0.1-SNAPSHOT \
+            --builder paketobuildpacks/builder:base \
+            --path . \
+            --publish
+
+      - name: Verify Image in ACR
+        run: |
           az acr repository list --name ${{ vars.ACR_NAME }} --output table
