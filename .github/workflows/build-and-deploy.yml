@@ -69,3 +69,13 @@ jobs:
       - name: Verify Image in ACR
         run: |
           az acr repository list --name ${{ vars.ACR_NAME }} --output table
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy@v1
+        with:
+            azure-container-registry: ${{ vars.ACR_NAME }}
+            image-name: productservice
+            image-tag: 0.0.1-SNAPSHOT
+            container-app-name: productservice-container-app
+            resource-group: productservice-dev-westeurope-rg
+            environment: productservice-container-app-env
