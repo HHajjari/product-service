@@ -52,3 +52,8 @@ jobs:
       - name: Build and push Docker image
         run: |
           mvn -DskipTests -Ddocker.registry=${{ vars.ACR_NAME }}.azurecr.io clean package spring-boot:build-image
+
+      - name: Verify All Repositories in ACR
+        run: |
+          echo "Listing all repositories in ACR..."
+          az acr repository list --name ${{ vars.ACR_NAME }} --output table
