@@ -52,8 +52,8 @@ jobs:
       - name: Get ACI Managed Identity Principal ID
         id: get_principal_id
         run: |
-          PRINCIPAL_ID=$(az container show --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_ACI_NAME }} --query "identity.principalId" --output tsv)
-          echo "ACI_PRINCIPAL_ID=$PRINCIPAL_ID" >> $GITHUB_ENV
+          export ACI_PRINCIPAL_ID=$(az container show --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_ACI_NAME }} --query "identity.principalId" --output tsv)
+          echo "ACI_PRINCIPAL_ID=$ACI_PRINCIPAL_ID" >> $GITHUB_ENV
 
       - name: Assign AcrPull Role to ACI Managed Identity
         run: |
