@@ -19,6 +19,41 @@ variable "acr_name" {
 }
 
 variable "github_oidc_principal_id" {
-  description = "Azure OIDC Principal ID"
+  description = "GitHub OIDC Principal ID (for authentication to ACR)"
   type        = string
+}
+
+variable "aci_name" {
+  description = "Name of the Azure Container Instance"
+  type        = string
+}
+
+variable "image_name" {
+  description = "Name of the Docker image in ACR"
+  type        = string
+  default     = "spring-boot-app"  # Default to your Spring Boot app image
+}
+
+variable "placeholder_image" {
+  description = "Initial placeholder image for ACI"
+  type        = string
+  default     = "busybox"  # ✅ Placeholder image to avoid downtime
+}
+
+variable "cpu" {
+  description = "CPU allocation for ACI"
+  type        = number
+  default     = 1
+}
+
+variable "memory" {
+  description = "Memory allocation for ACI (GB)"
+  type        = number
+  default     = 1
+}
+
+variable "container_port" {
+  description = "Port exposed by the container"
+  type        = number
+  default     = 8080
 }
