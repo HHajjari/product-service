@@ -1,81 +1,32 @@
-name: Build and Deploy Spring Boot App to ACR
+name: Build and Deploy with Buildpacks
 
 on:
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  id-token: write  # Required for Workload Identity Federation
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Log in to Azure using Workload Identity
-      - name: Log in to Azure
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # Log in to Azure Container Registry (ACR)
-      - name: Log in to ACR
-        run: |
-          az acr login --name ${{ vars.ACR_NAME }}
-
-      # Set up Java
-      - name: Set up Java
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '21'
           distribution: 'temurin'
-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Print ACR Name
-        run: |
-          echo "ACR Name: ${{ vars.ACR_NAME }}.azurecr.io"
-
-      - name: Log in to ACR using Docker
-        run: |
-          TOKEN=$(az acr login --name ${{ vars.ACR_NAME }} --expose-token --output tsv --query accessToken)
-          echo "$TOKEN" | docker login ${{ vars.ACR_NAME }}.azurecr.io -u 00000000-0000-0000-0000-000000000000 --password-stdin
+          java-version: '17'
 
       - name: Install Pack CLI
         run: |
-          curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.30.0/pack-v0.30.0-linux.tgz" | sudo tar -xz -C /usr/local/bin
+          curl -sSL "https://github.com/buildpacks/pack/releases/latest/download/pack-linux-amd64.tgz" | tar -xz -C /usr/local/bin
 
-      - name: Build and Push Image
+      - name: Build Docker Image with Paketo Buildpacks
         run: |
-          pack build ${{ vars.ACR_NAME }}.azurecr.io/productservice:0.0.1-SNAPSHOT \
-            --builder paketobuildpacks/builder-jammy-java-tiny \
-            --env BP_JVM_VERSION=21 \
-            --path . \
-            --publish
-      
+          pack build myregistry.azurecr.io/myapp:latest --builder paketobuildpacks/builder-jammy-base
 
-      - name: Verify Image in ACR
-        run: |
-          az acr repository list --name ${{ vars.ACR_NAME }} --output table
+      - name: Log in to Azure Container Registry
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login myregistry.azurecr.io -u ${{ secrets.ACR_USERNAME }} --password-stdin
 
-      - name: Deploy to Azure Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          acrName: ${{ vars.ACR_NAME }}
-          containerAppName: productservice-container-app
-          resourceGroup: productservice-dev-westeurope-rg
-          imageToDeploy: productserviceacr.azurecr.io/productservice:0.0.1-SNAPSHOT
-          containerAppEnvironment: productservice-container-app-env
-
+      - name: Push Docker Image
+        run: docker push myregistry.azurecr.io/myapp:latest
