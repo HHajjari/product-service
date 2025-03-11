@@ -4,23 +4,30 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-# Fetch Existing Resource Group
-data "azurerm_resource_group" "rg" {
+# 🔹 Check if Resource Group Exists
+data "azurerm_resource_group" "existing_rg" {
   name = var.resource_group_name
+}
+
+# 🔹 Create Resource Group Only If It Doesn't Exist
+resource "azurerm_resource_group" "rg" {
+  count    = length(data.azurerm_resource_group.existing_rg.name) > 0 ? 0 : 1
+  name     = var.resource_group_name
+  location = var.location
 }
 
 # 🔹 Fetch Existing Azure Container Registry (ACR)
 data "azurerm_container_registry" "existing_acr" {
   name                = var.acr_name
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = var.resource_group_name
 }
 
-# If ACR does not exist, create a new one
+# 🔹 If ACR does not exist, create a new one
 resource "azurerm_container_registry" "acr" {
   count               = length(data.azurerm_container_registry.existing_acr.name) > 0 ? 0 : 1
   name                = var.acr_name
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = var.resource_group_name
+  location            = var.location
   sku                 = "Basic"
   admin_enabled       = false  # Admin access disabled for security
 
@@ -29,18 +36,18 @@ resource "azurerm_container_registry" "acr" {
   }
 }
 
-# Grant GitHub Actions permission to push images to ACR
+# 🔹 Grant GitHub Actions permission to push images to ACR
 resource "azurerm_role_assignment" "acr_push" {
   scope                = data.azurerm_container_registry.existing_acr.id
   role_definition_name = "AcrPush"
   principal_id         = var.github_oidc_principal_id
 }
 
-# Create Azure Container Instance (ACI) with a Placeholder Image
+# 🔹 Create Azure Container Instance (ACI) with a Placeholder Image
 resource "azurerm_container_group" "aci" {
   name                = var.aci_name
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = var.resource_group_name
+  location            = var.location
   os_type             = "Linux"
 
   container {
@@ -68,7 +75,7 @@ resource "azurerm_container_group" "aci" {
   }
 }
 
-# Assign AcrPull Role to ACI Managed Identity
+# 🔹 Assign AcrPull Role to ACI Managed Identity
 resource "azurerm_role_assignment" "aci_acr_pull" {
   scope                = data.azurerm_container_registry.existing_acr.id
   role_definition_name = "AcrPull"
