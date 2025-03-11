@@ -42,7 +42,7 @@ jobs:
 
       - name: Deploy to Azure Container Instances (ACI)
         run: |
-          az container create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          az container create --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
             --name ${{ vars.AZURE_ACI_NAME }} \
             --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest \
             --cpu 1 --memory 2 \
