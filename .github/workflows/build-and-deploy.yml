@@ -1,9 +1,7 @@
 name: Build and Push Image to ACR with OIDC
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   id-token: write  # Required for OIDC authentication
