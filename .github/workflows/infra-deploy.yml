@@ -1,0 +1,41 @@
+name: Infra Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  infra:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: latest
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Init Terraform
+        run: terraform init
+        working-directory: infra/
+
+      - name: Apply Terraform (Create Infrastructure)
+        run: |
+          terraform apply -auto-approve \
+            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -var "resource_group_name=${{ vars.AZURE_RESOURCE_GROUP }}" \
+            -var "location=${{ vars.AZURE_LOCATION }}" \
+            -var "acr_name=${{ vars.AZURE_ACR_NAME }}" \
+            -var "github_oidc_principal_id=${{ secrets.GITHUB_OIDC_PRINCIPAL_ID }}"
+        working-directory: infra/
