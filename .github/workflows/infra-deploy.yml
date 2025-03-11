@@ -29,7 +29,7 @@ jobs:
 
       - name: Init Terraform
         run: terraform init
-        working-directory: ./infra
+        working-directory: infra
 
       - name: Apply Terraform (Create Infrastructure)
         run: |
@@ -39,4 +39,4 @@ jobs:
             -var "location=${{ vars.AZURE_LOCATION }}" \
             -var "acr_name=${{ vars.AZURE_ACR_NAME }}" \
             -var "github_oidc_principal_id=${{ secrets.GITHUB_OIDC_PRINCIPAL_ID }}"
-        working-directory: ./infra
+        working-directory: infra
