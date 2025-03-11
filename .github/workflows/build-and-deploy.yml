@@ -35,14 +35,14 @@ jobs:
             --builder paketobuildpacks/builder:full \
             --publish
 
-      - name: Deploy to Azure Container Instances
-        uses: azure/aci-deploy@v1
-        with:
-          resource-group: ${{ vars.AZURE_RESOURCE_GROUP }}
-          location: ${{ vars.AZURE_LOCATION }}
-          name: spring-boot-service
-          image: ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest
-          registry-login-server: ${{ vars.AZURE_ACR_NAME }}.azurecr.io
-          managed-identity: true
-          dns-name-label: spring-boot-service-${{ github.run_id }}
-          ports: 8080
+      - name: Deploy to Azure Container Instances (ACI)
+        run: |
+          az container create --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --name spring-boot-service \
+            --image ${{ vars.ACR_NAME }}.azurecr.io/spring-boot-app:latest \
+            --cpu 1 --memory 2 \
+            --dns-name-label spring-boot-service-${{ github.run_id }} \
+            --ports 8080 \
+            --ip-address Public \
+            --restart-policy Always \
+            --assign-identity [system] 
