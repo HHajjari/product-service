@@ -19,6 +19,6 @@ variable "acr_name" {
 }
 
 variable "github_oidc_principal_id" {
-  description = "Azure OIDC Principal ID for GitHub"
+  description = "Azure OIDC Principal ID"
   type        = string
 }
