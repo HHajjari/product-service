@@ -48,3 +48,4 @@ jobs:
             -var "location=${{ vars.AZURE_LOCATION }}" \
             -var "acr_name=${{ vars.AZURE_ACR_NAME }}" \
             -var "github_oidc_principal_id=${{ secrets.AZURE_OIDC_PRINCIPAL_ID }}" \
+        working-directory: infra
