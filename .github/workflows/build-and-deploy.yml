@@ -3,6 +3,10 @@ name: Build and Deploy with Buildpacks
 on:
   workflow_dispatch:  # Allows manual trigger
 
+permissions:
+  id-token: write  # Required for OIDC authentication
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,12 +25,21 @@ jobs:
         run: |
           curl -sSL "https://github.com/buildpacks/pack/releases/latest/download/pack-linux-amd64.tgz" | tar -xz -C /usr/local/bin
 
+      - name: Azure Login via OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Azure Container Registry via OIDC
+        run: |
+          TOKEN=$(az acr login --name myregistry --expose-token --output tsv --query accessToken)
+          echo $TOKEN | docker login myregistry.azurecr.io --username 00000000-0000-0000-0000-000000000000 --password-stdin
+
       - name: Build Docker Image with Paketo Buildpacks
         run: |
           pack build myregistry.azurecr.io/myapp:latest --builder paketobuildpacks/builder-jammy-base
-
-      - name: Log in to Azure Container Registry
-        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login myregistry.azurecr.io -u ${{ secrets.ACR_USERNAME }} --password-stdin
 
       - name: Push Docker Image
         run: docker push myregistry.azurecr.io/myapp:latest
