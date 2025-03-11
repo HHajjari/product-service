@@ -3,6 +3,10 @@ name: Infra Deployment
 on:
   workflow_dispatch:  # Allows manual trigger
 
+permissions:
+  id-token: write   # REQUIRED for OIDC authentication
+  contents: read    # Allows access to the repository content
+
 jobs:
   infra:
     runs-on: ubuntu-latest
