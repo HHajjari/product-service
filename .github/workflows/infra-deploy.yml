@@ -31,6 +31,14 @@ jobs:
         run: terraform init
         working-directory: infra
 
+      - name: Debug Variable Values
+        run: |
+          echo "Subscription ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          echo "Resource Group: ${{ vars.AZURE_RESOURCE_GROUP }}"
+          echo "Location: ${{ vars.AZURE_LOCATION }}"
+          echo "ACR Name: ${{ vars.AZURE_ACR_NAME }}"
+          echo "GitHub OIDC Principal ID: ${{ secrets.GITHUB_OIDC_PRINCIPAL_ID }}"
+
       - name: Apply Terraform (Create Infrastructure)
         run: |
           terraform apply -auto-approve \
