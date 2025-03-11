@@ -49,7 +49,7 @@ resource "azurerm_container_group" "aci" {
     cpu    = "1"
     memory = "1"
 
-    command = ["sh", "-c", "while true; do echo 'ACI is waiting for the real image'; sleep 30; done"]  # Keeps container alive
+    commands = ["sh", "-c", "while true; do echo 'ACI is waiting for the real image'; sleep 30; done"]
 
     ports {
       port     = 8080
