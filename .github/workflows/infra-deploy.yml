@@ -37,7 +37,7 @@ jobs:
           echo "Resource Group: ${{ vars.AZURE_RESOURCE_GROUP }}"
           echo "Location: ${{ vars.AZURE_LOCATION }}"
           echo "ACR Name: ${{ vars.AZURE_ACR_NAME }}"
-          echo "GitHub OIDC Principal ID: ${{ secrets.GITHUB_OIDC_PRINCIPAL_ID }}"
+          echo "GitHub OIDC Principal ID: ${{ secrets.AZURE_OIDC_PRINCIPAL_ID }}"
 
       - name: Apply Terraform (Create Infrastructure)
         run: |
@@ -46,5 +46,5 @@ jobs:
             -var "resource_group_name=${{ vars.AZURE_RESOURCE_GROUP }}" \
             -var "location=${{ vars.AZURE_LOCATION }}" \
             -var "acr_name=${{ vars.AZURE_ACR_NAME }}" \
-            -var "github_oidc_principal_id=${{ secrets.GITHUB_OIDC_PRINCIPAL_ID }}"
+            -var "github_oidc_principal_id=${{ secrets.AZURE_OIDC_PRINCIPAL_ID }}"
         working-directory: infra
