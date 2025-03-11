@@ -28,7 +28,7 @@ public class ProductController {
 
     @GetMapping("/health")
     public ResponseEntity<String> getProductById() {
-        return ResponseEntity.of(Optional.of("Up"));
+        return ResponseEntity.of(Optional.of("Product service is up and running"));
     }
 
     @GetMapping("/{id}")
