@@ -53,5 +53,6 @@ jobs:
             --assign-identity \
             --registry-login-server ${{ vars.AZURE_ACR_NAME }}.azurecr.io \
             --registry-username $ACR_USERNAME \
-            --registry-password $ACR_PASSWORD
+            --registry-password $ACR_PASSWORD \
+            --os-type Linux
       
