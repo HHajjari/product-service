@@ -6,13 +6,11 @@ variable "subscription_id" {
 variable "resource_group_name" {
   description = "Resource Group Name"
   type        = string
-  default     = "my-resource-group"  # Change as needed
 }
 
 variable "location" {
   description = "Azure Region"
   type        = string
-  default     = "West Europe"
 }
 
 variable "acr_name" {
@@ -21,6 +19,6 @@ variable "acr_name" {
 }
 
 variable "github_oidc_principal_id" {
-  description = "GitHub OIDC Principal ID"
+  description = "Azure OIDC Principal ID for GitHub"
   type        = string
 }
