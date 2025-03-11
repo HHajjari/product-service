@@ -23,7 +23,8 @@ jobs:
 
       - name: Install Pack CLI
         run: |
-          curl -sSL "https://github.com/buildpacks/pack/releases/latest/download/pack-linux-amd64.tgz" | tar -xz -C /usr/local/bin
+          PACK_VERSION=$(curl -sSL https://api.github.com/repos/buildpacks/pack/releases/latest | jq -r .tag_name)
+          curl -sSL "https://github.com/buildpacks/pack/releases/download/${PACK_VERSION}/pack-linux-amd64.tgz" | tar -xz -C /usr/local/bin
 
       - name: Azure Login via OIDC
         uses: azure/login@v1
