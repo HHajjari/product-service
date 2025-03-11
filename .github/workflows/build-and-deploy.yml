@@ -32,6 +32,6 @@ jobs:
       - name: Build and Push Image with Buildpacks
         run: |
           pack build ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest \
-            --builder paketobuildpacks/builder:base \
+            --builder paketobuildpacks/builder:full \
             --env BP_JVM_VERSION=21 \
             --publish
