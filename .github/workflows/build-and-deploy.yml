@@ -45,4 +45,5 @@ jobs:
             --ports 8080 \
             --ip-address Public \
             --restart-policy Always \
-            --assign-identity [system] 
+            --identity SystemAssigned
+            --registry-login-server ${{ vars.AZURE_ACR_NAME }}.azurecr.io
