@@ -26,10 +26,11 @@ jobs:
         run: |
           az acr login --name ${{ vars.AZURE_ACR_NAME }}
 
+      - name: Set up pack CLI
+        uses: buildpacks/github-actions/setup-pack@v5.8.8
+
       - name: Build and Push Image with Buildpacks
-        uses: paketo-buildpacks/github-action@main
-        with:
-          builder: paketobuildpacks/builder:base
-          image: ${{ vars.AZURE_ACR_NAME }}.azurecr.io/product-service-app:latest
-          registry-username: "00000000-0000-0000-0000-000000000000"  # Dummy username (OIDC does not use this)
-          registry-password: "00000000-0000-0000-0000-000000000000"  # Dummy password (OIDC does not use this)
+        run: |
+          pack build ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest \
+            --builder paketobuildpacks/builder:base \
+            --publish
