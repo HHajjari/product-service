@@ -40,7 +40,7 @@ jobs:
           echo "ACI Name: ${{ vars.AZURE_ACI_NAME }}"
           echo "GitHub OIDC Principal ID: ${{ secrets.AZURE_OIDC_PRINCIPAL_ID }}"
 
-      - name: Apply Terraform (Create Infrastructure with Placeholder Image)
+      - name: Apply Terraform (Deploy ACI with Placeholder Image)
         run: |
           terraform apply -auto-approve \
             -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
