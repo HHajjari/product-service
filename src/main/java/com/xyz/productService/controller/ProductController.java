@@ -3,9 +3,11 @@ package com.xyz.productService.controller;
 import com.xyz.productService.model.Product;
 import com.xyz.productService.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -22,6 +24,11 @@ public class ProductController {
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productRepository.save(product);
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<String> getProductById() {
+        return ResponseEntity.of(Optional.of("Up"));
     }
 
     @GetMapping("/{id}")
