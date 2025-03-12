@@ -23,6 +23,28 @@ resource "azurerm_container_registry" "acr" {
   }
 }
 
+# Deploy an Azure Container Instance (ACI) with a basic image from public ACR
+resource "azurerm_container_group" "aci" {
+  name                = var.aci_name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  os_type             = "Linux"
+
+  container {
+    name   = "hello-world"
+    image  = "mcr.microsoft.com/hello-world"  # Public Azure ACR image
+    cpu    = "0.5"
+    memory = "0.5"
+
+    ports {
+      port     = 80
+      protocol = "TCP"
+    }
+  }
+
+  restart_policy = "Always"
+}
+
 # Grant GitHub Actions permission to push images to ACR
 resource "azurerm_role_assignment" "acr_push" {
   scope                = azurerm_container_registry.acr.id

@@ -18,6 +18,11 @@ variable "acr_name" {
   type        = string
 }
 
+variable "aci_name" {
+  description = "Azure Container Instance Name"
+  type        = string
+}
+
 variable "github_oidc_principal_id" {
   description = "GitHub OIDC Principal ID (for authentication to ACR)"
   type        = string
