@@ -40,9 +40,23 @@ jobs:
           echo "ACR_USERNAME=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "username" --output tsv)" >> $GITHUB_ENV
           echo "ACR_PASSWORD=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "passwords[0].value" --output tsv)" >> $GITHUB_ENV
 
-      - name: Update Azure Container Instances (ACI)
+      - name: Delete Existing ACI
         run: |
-          az container update --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+          az container delete --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --name ${{ vars.AZURE_ACI_NAME }} --yes
+
+      - name: Deploy New ACI with Latest Image
+        run: |
+          az container create --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
             --name ${{ vars.AZURE_ACI_NAME }} \
-            --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest
-      
+            --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest \
+            --cpu 0.5 --memory 0.5 \
+            --dns-name-label spring-boot-service-${{ github.run_id }} \
+            --ports 8080 \
+            --ip-address Public \
+            --restart-policy Always \
+            --assign-identity \
+            --registry-login-server ${{ vars.AZURE_ACR_NAME }}.azurecr.io \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
+            --os-type Linux
