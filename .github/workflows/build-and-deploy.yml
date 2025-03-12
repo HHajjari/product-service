@@ -49,7 +49,7 @@ jobs:
           az container create --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
             --name ${{ vars.AZURE_ACI_NAME }} \
             --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest \
-            --cpu 0.5 --memory 0.5 \
+            --cpu 1 --memory 2 \
             --dns-name-label spring-boot-service-${{ github.run_id }} \
             --ports 8080 \
             --ip-address Public \
