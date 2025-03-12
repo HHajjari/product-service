@@ -37,13 +37,12 @@ jobs:
 
       - name: Get ACR Credentials
         run: |
+          # Enable ACR Admin Access (only if not already enabled)
+          az acr update -n ${{ vars.AZURE_ACR_NAME }} --admin-enabled true
+
+          # Retrieve ACR Credentials
           echo "ACR_USERNAME=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "username" --output tsv)" >> $GITHUB_ENV
           echo "ACR_PASSWORD=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "passwords[0].value" --output tsv)" >> $GITHUB_ENV
-
-      - name: Delete Existing ACI
-        run: |
-          az container delete --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-            --name ${{ vars.AZURE_ACI_NAME }} --yes
 
       - name: Deploy New ACI with Latest Image
         run: |
