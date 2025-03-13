@@ -5,5 +5,3 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: sa
-server:
-  port: 80
