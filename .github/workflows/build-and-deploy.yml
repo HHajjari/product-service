@@ -52,6 +52,12 @@ jobs:
           echo "ACR_USERNAME=$(echo $ACR_CREDENTIALS | jq -r '.username')" >> $GITHUB_ENV
           echo "ACR_PASSWORD=$(echo $ACR_CREDENTIALS | jq -r '.password')" >> $GITHUB_ENV
 
+      - name: Delete Existing ACI (if exists)
+        continue-on-error: true
+        run: |
+          az container delete --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --name ${{ vars.AZURE_ACI_NAME }} --yes || true
+
       - name: Deploy New ACI with Versioned Image
         run: |
           az container create --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
