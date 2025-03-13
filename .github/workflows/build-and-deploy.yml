@@ -46,6 +46,12 @@ jobs:
             --builder paketobuildpacks/builder:full \
             --publish
 
+      - name: Get ACR Credentials
+        run: |
+          ACR_CREDENTIALS=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "{username:username,password:passwords[0].value}" --output json)
+          echo "ACR_USERNAME=$(echo $ACR_CREDENTIALS | jq -r '.username')" >> $GITHUB_ENV
+          echo "ACR_PASSWORD=$(echo $ACR_CREDENTIALS | jq -r '.password')" >> $GITHUB_ENV
+
       - name: Deploy New ACI with Versioned Image
         run: |
           az container create --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
@@ -58,4 +64,6 @@ jobs:
             --restart-policy Always \
             --assign-identity \
             --registry-login-server ${{ vars.AZURE_ACR_NAME }}.azurecr.io \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
             --os-type Linux
