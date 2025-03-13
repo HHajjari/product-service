@@ -15,10 +15,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Build Project to Ensure Version Extraction Works
+        run: |
+          mvn clean package -DskipTests
+
       - name: Get Application Version and Sanitize for DNS
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          SANITIZED_VERSION=$(echo "$VERSION" | tr '.' '-' | tr '[:upper:]' '[:lower:]')
+          SANITIZED_VERSION=$(echo "$VERSION" | tr '.' '-' | tr '[:upper:]' '[:lower:]' | cut -c1-40)  # Truncate to 40 chars
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
           echo "DNS_SAFE_VERSION=$SANITIZED_VERSION" >> $GITHUB_ENV
 
@@ -42,20 +46,11 @@ jobs:
             --builder paketobuildpacks/builder:full \
             --publish
 
-      - name: Get ACR Credentials
-        run: |
-          # Enable ACR Admin Access (only if not already enabled)
-          az acr update -n ${{ vars.AZURE_ACR_NAME }} --admin-enabled true
-
-          # Retrieve ACR Credentials
-          echo "ACR_USERNAME=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "username" --output tsv)" >> $GITHUB_ENV
-          echo "ACR_PASSWORD=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "passwords[0].value" --output tsv)" >> $GITHUB_ENV
-
-      - name: Deploy New ACI with Latest Image
+      - name: Deploy New ACI with Versioned Image
         run: |
           az container create --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
             --name ${{ vars.AZURE_ACI_NAME }} \
-            --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest \
+            --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:$DNS_SAFE_VERSION \
             --cpu 1 --memory 2 \
             --dns-name-label xyz-product-service-$DNS_SAFE_VERSION \
             --ports 8080 \
@@ -63,6 +58,4 @@ jobs:
             --restart-policy Always \
             --assign-identity \
             --registry-login-server ${{ vars.AZURE_ACR_NAME }}.azurecr.io \
-            --registry-username $ACR_USERNAME \
-            --registry-password $ACR_PASSWORD \
             --os-type Linux
