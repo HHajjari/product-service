@@ -38,7 +38,7 @@ public class ProductController {
     @GetMapping("/health")
     @Operation(summary = "Service health check", description = "Check if the product service is running")
     public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Product service is up and running");
+        return ResponseEntity.ok("UP");
     }
 
     @GetMapping("/{id}")
