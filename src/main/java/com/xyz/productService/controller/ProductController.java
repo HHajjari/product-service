@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductRepository productRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @GetMapping
     @Operation(summary = "Get all products", description = "Retrieve a list of all available products")
@@ -38,6 +41,7 @@ public class ProductController {
     @GetMapping("/health")
     @Operation(summary = "Service health check", description = "Check if the product service is running")
     public ResponseEntity<String> healthCheck() {
+        logger.info("Health check endpoint was accessed.");
         return ResponseEntity.ok("UP");
     }
 
