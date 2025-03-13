@@ -56,7 +56,16 @@ jobs:
         continue-on-error: true
         run: |
           az container delete --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-            --name ${{ vars.AZURE_ACI_NAME }} --yes || true
+          --name ${{ vars.AZURE_ACI_NAME }} --yes || true
+
+      - name: Wait for ACI Deletion to Complete
+        run: |
+          echo "Waiting for ACI deletion to complete..."
+          while az container show --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --name ${{ vars.AZURE_ACI_NAME }} &>/dev/null; do
+            echo "ACI still exists, waiting..."
+            sleep 10
+          done
+          echo "ACI deletion completed."
 
       - name: Deploy New ACI with Versioned Image
         run: |
