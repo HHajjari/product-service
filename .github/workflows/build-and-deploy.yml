@@ -15,10 +15,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Get Application Version from pom.xml
+      - name: Get Application Version and Sanitize for DNS
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          SANITIZED_VERSION=$(echo "$VERSION" | tr '.' '-' | tr '[:upper:]' '[:lower:]')
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "DNS_SAFE_VERSION=$SANITIZED_VERSION" >> $GITHUB_ENV
 
       - name: Log in to Azure using OIDC
         uses: azure/login@v1
@@ -36,7 +38,7 @@ jobs:
 
       - name: Build and Push Image with Buildpacks
         run: |
-          pack build ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:$APP_VERSION \
+          pack build ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:$DNS_SAFE_VERSION \
             --builder paketobuildpacks/builder:full \
             --publish
 
@@ -55,7 +57,7 @@ jobs:
             --name ${{ vars.AZURE_ACI_NAME }} \
             --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:latest \
             --cpu 1 --memory 2 \
-            --dns-name-label xyz-product-service-$APP_VERSION \
+            --dns-name-label xyz-product-service-$DNS_SAFE_VERSION \
             --ports 8080 \
             --ip-address Public \
             --restart-policy Always \
