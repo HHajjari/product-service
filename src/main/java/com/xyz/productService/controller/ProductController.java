@@ -38,13 +38,6 @@ public class ProductController {
         return productRepository.save(product);
     }
 
-    @GetMapping("/health")
-    @Operation(summary = "Service health check", description = "Check if the product service is running")
-    public ResponseEntity<String> healthCheck() {
-        logger.info("Health check endpoint was accessed.");
-        return ResponseEntity.ok("UP");
-    }
-
     @GetMapping("/{id}")
     @Operation(
             summary = "Get product by ID",

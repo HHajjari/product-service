@@ -74,7 +74,7 @@ jobs:
             --image ${{ vars.AZURE_ACR_NAME }}.azurecr.io/spring-boot-app:$DNS_SAFE_VERSION \
             --cpu 1 --memory 2 \
             --dns-name-label xyz-product-service-$DNS_SAFE_VERSION \
-            --ports 80 8080 \
+            --ports 8080 \
             --ip-address Public \
             --restart-policy Always \
             --assign-identity \
