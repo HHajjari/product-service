@@ -80,7 +80,7 @@ resource "azurerm_api_management_api" "product_api" {
 
   import {
     content_format = "swagger-json"
-    content_value  = file("${path.module}/infra/swagger/product-service-swagger.json")
+    content_value  = file("swagger/product-service-swagger.json")
   }
 }
 
