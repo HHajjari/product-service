@@ -22,7 +22,7 @@ resource "azurerm_container_registry" "acr" {
     prevent_destroy = true
   }
 }
-
+/*
 # Deploy an Azure Container Instance (ACI) with a basic image from public ACR
 resource "azurerm_container_group" "aci" {
   name                = var.aci_name
@@ -43,7 +43,7 @@ resource "azurerm_container_group" "aci" {
   }
 
   restart_policy = "Always"
-}
+}*/
 
 # Grant GitHub Actions permission to push images to ACR
 resource "azurerm_role_assignment" "acr_push" {
@@ -51,14 +51,14 @@ resource "azurerm_role_assignment" "acr_push" {
   role_definition_name = "AcrPush"
   principal_id         = var.github_oidc_principal_id
 }
-
+/*
 # Assign AcrPull Role to ACI Managed Identity (If ACI is created later)
 resource "azurerm_role_assignment" "aci_acr_pull" {
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
   principal_id         = var.github_oidc_principal_id
 }
-/*
+
 resource "azurerm_api_management" "apim" {
   name                = "apimproductservice"
   location            = azurerm_resource_group.rg.location
