@@ -58,7 +58,7 @@ resource "azurerm_role_assignment" "aci_acr_pull" {
   role_definition_name = "AcrPull"
   principal_id         = var.github_oidc_principal_id
 }
-
+/*
 resource "azurerm_api_management" "apim" {
   name                = "apimproductservice"
   location            = azurerm_resource_group.rg.location
@@ -113,3 +113,4 @@ resource "azurerm_api_management_api_operation_policy" "set_backend_policy" {
   </policies>
   XML
 }
+*/
