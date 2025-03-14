@@ -46,6 +46,10 @@ jobs:
             --builder paketobuildpacks/builder:full \
             --publish
 
+      - name: Enable Admin Access for ACR
+        run: |
+          az acr update -n ${{ vars.AZURE_ACR_NAME }} --admin-enabled true
+
       - name: Get ACR Credentials
         run: |
           ACR_CREDENTIALS=$(az acr credential show --name ${{ vars.AZURE_ACR_NAME }} --query "{username:username,password:passwords[0].value}" --output json)
